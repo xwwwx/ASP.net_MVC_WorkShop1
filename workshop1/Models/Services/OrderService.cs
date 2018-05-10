@@ -2,55 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using workshop1.Daos;
 
 namespace workshop1.Models.Services
 {
     public class OrderService
     {
-        /// <summary>
-        /// 目前所有訂單
-        /// </summary>
-        private static IList<Order> Orders = new List<Order>()
-        {
-            new Order()
-            {
-                OrderID = 1,
-                CustomerID = 1,
-                EmployeeID = 1,
-                OrderDate = new DateTime(2018, 3, 27),
-                RequiredDate = new DateTime(2018, 3, 30),
-                //ShipedDate = new DateTime(2018, 3,29),
-                ShipperID = 1,
-                Freight = 300,
-                ShipAddress = "高雄市燕巢校區高雄應用科技大學",
-                ShipCity = "高雄市",
-                ShipRegin = "燕巢區",
-                ShipPostalCode = "705",
-                ShipCountry = "台灣"
-            },
-            new Order()
-            {
-                OrderID = 2,
-                CustomerID = 2,
-                EmployeeID = 2,
-                OrderDate = new DateTime(2018, 3, 30),
-                RequiredDate = new DateTime(2018, 4, 20),
-                ShipedDate = new DateTime(2018, 4,10),
-                ShipperID = 2,
-                Freight = 1111500,
-                ShipAddress = "高雄市建功校區高雄應用科技大學",
-                ShipCity = "高雄市",
-                ShipRegin = "三民區",
-                ShipPostalCode = "710",
-                ShipCountry = "台灣"
-            }
-        };
-
-        /// <summary>
-        /// 下一筆訂單編號
-        /// </summary>
-        private static int CurrentOrderNum = Orders.Count + 1;
-
         /// <summary>
         /// 取得 Order by 訂單編號
         /// </summary>
@@ -58,7 +15,8 @@ namespace workshop1.Models.Services
         /// <returns></returns>
         public Order GetOrder(int orderID)
         {
-            return Orders.SingleOrDefault(m => m.OrderID == orderID);
+            OrdersDao dao = new OrdersDao();
+            return dao.GetOrderById(orderID);
         }
 
         /// <summary>
@@ -69,7 +27,9 @@ namespace workshop1.Models.Services
         {
             CustomerService customerService = new CustomerService();
 
-            IEnumerable<Order> currentOrders = Orders;
+            OrdersDao orderDao = new OrdersDao();
+            // 取得所有訂單後進行篩選  (注意: 此處應將查詢條件串入SQL中為較好之寫法)
+            IEnumerable<Order> currentOrders = orderDao.GetAllOrders();
 
             // 訂單編號
             if (arg.OrderID.HasValue)
@@ -113,10 +73,10 @@ namespace workshop1.Models.Services
             // 出貨日期
             if (arg.ShipedDate.HasValue)
             {
-                currentOrders = currentOrders.Where(m => m.ShipedDate == arg.ShipedDate.Value);
+                currentOrders = currentOrders.Where(m => m.ShippedDate == arg.ShipedDate.Value);
             }
 
-            return currentOrders.OrderBy(m=>m.OrderID).ToList();
+            return currentOrders.OrderBy(m => m.OrderID).ToList();
         }
 
         /// <summary>
@@ -125,8 +85,8 @@ namespace workshop1.Models.Services
         /// <param name="order">欲新增的訂單資料</param>
         public void InsOrder(Order order)
         {
-            order.OrderID = CurrentOrderNum++;
-            Orders.Add(order);
+            OrdersDao orderDao = new OrdersDao();
+            orderDao.AddNewOrderReturnNewOrderId(order);
         }
 
         /// <summary>
@@ -135,17 +95,8 @@ namespace workshop1.Models.Services
         /// <param name="order">欲更新的訂單資料</param>
         public void UpdOrder(Order order)
         {
-            Order oldOrder = Orders.SingleOrDefault(m => m.OrderID == order.OrderID);
-
-            if (oldOrder != null)
-            {
-                Orders.Remove(oldOrder);
-                Orders.Add(order);
-            }
-            else
-            {
-                throw new ArgumentException("欲修改訂單不存在。");
-            }
+            OrdersDao orderDao = new OrdersDao();
+            orderDao.UpdateOrder(order);
         }
 
         /// <summary>
@@ -154,8 +105,8 @@ namespace workshop1.Models.Services
         /// <param name="orderID">訂單編號</param>
         public void DelOrder(int orderID)
         {
-            Order delOrder = Orders.SingleOrDefault(m => m.OrderID == orderID);
-            Orders.Remove(delOrder);
+            OrdersDao orderDao = new OrdersDao();
+            orderDao.DeleteOrder(orderID);
         }
     }
 }

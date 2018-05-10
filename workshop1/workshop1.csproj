@@ -48,6 +48,7 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -111,9 +112,17 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Daos\BaseDao.cs" />
+    <Compile Include="Daos\ProductsDao.cs" />
+    <Compile Include="Daos\ShippersDao.cs" />
+    <Compile Include="Daos\OrdersDao.cs" />
+    <Compile Include="Daos\CustomersDao.cs" />
+    <Compile Include="Daos\EmployeesDao.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\OrderDetail.cs" />
+    <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\Order.cs" />
@@ -121,6 +130,7 @@
     <Compile Include="Models\Services\CustomerService.cs" />
     <Compile Include="Models\Services\EmployeeService.cs" />
     <Compile Include="Models\Services\OrderService.cs" />
+    <Compile Include="Models\Services\ProductService.cs" />
     <Compile Include="Models\Services\ShipperService.cs" />
     <Compile Include="Models\Shipper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -158,7 +168,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>12692</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

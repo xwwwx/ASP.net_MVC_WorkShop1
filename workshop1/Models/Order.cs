@@ -8,6 +8,14 @@ namespace workshop1.Models
 {
     public class Order
     {
+        /// <summary>
+        /// 訂單詳細資料
+        /// </summary>
+        public List<OrderDetail> Details { get; set; }
+
+        /// <summary>
+        /// 訂單ID
+        /// </summary>
         public int OrderID { get; set; }
 
         [Display(Name="客戶名稱")]
@@ -28,25 +36,29 @@ namespace workshop1.Models
         public DateTime RequiredDate { get; set; }
 
         [Display(Name = "出貨日期")]
-        public DateTime? ShipedDate { get; set; }
+        public DateTime? ShippedDate { get; set; }
 
         [Display(Name = "出貨公司")]
+        [Required]
         public int? ShipperID { get; set; }
 
         [Display(Name = "運費")]
+        [Required]
         public decimal? Freight { get; set; }
 
         [Display(Name = "出貨國家")]
         [MaxLength(15, ErrorMessage = "字數長度不可超過{1}")]
+        [Required]
         public string ShipCountry { get; set; }
 
         [Display(Name = "出貨城市")]
         [MaxLength(15, ErrorMessage = "字數長度不可超過{1}")]
+        [Required]
         public string ShipCity { get; set; }
 
         [Display(Name = "出貨地區")]
         [MaxLength(15, ErrorMessage = "字數長度不可超過{1}")]
-        public string ShipRegin { get; set; }
+        public string ShipRegion { get; set; }
 
         [Display(Name = "郵遞區號")]
         [MaxLength(10, ErrorMessage = "字數長度不可超過{1}")]
@@ -54,6 +66,7 @@ namespace workshop1.Models
 
         [Display(Name = "出貨地址")]
         [MaxLength(60, ErrorMessage ="字數長度不可超過{1}")]
+        [Required]
         public string ShipAddress { get; set; }
     }
 }

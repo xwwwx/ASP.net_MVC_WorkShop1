@@ -33,7 +33,7 @@ namespace workshop1.Controllers
         /// <returns></returns>
         [HttpPost]
         public ActionResult OrderList(OrderQueryArg arg)
-        {
+        {   
             OrderService orderService = new OrderService();
             CustomerService customerService = new CustomerService();
 
@@ -54,8 +54,17 @@ namespace workshop1.Controllers
         public ActionResult CreateOrder()
         {
             // 準備下拉選單
-            PrepareDDLSource();
+            //PrepareDDLSource();
+            ViewBag.CustomerList = GetCustomerList();
 
+            // 準備 [負責員工] 下拉選單資料
+            ViewBag.EmployeeList = GetEmployeeList();
+
+            // 準備 [出貨公司名稱] 下拉選單資料
+            ViewBag.ShipperList = GetShipperList();
+
+            // 商品下拉選單
+            ViewBag.ProductList = GetProductList();
             return View();
         }
 
@@ -67,17 +76,11 @@ namespace workshop1.Controllers
         [HttpPost]
         public ActionResult CreateOrder(Order order)
         {
-            if (ModelState.IsValid)
+            // 產品選擇是否重複  true:有重複
+            bool isProductDuplicate = order.Details.Select(x => x.ProductID).Distinct().Count() != order.Details.Count;
+            if (!ModelState.IsValid || isProductDuplicate)
             {
-                ModelState.Clear();
-
-                OrderService orderService = new OrderService();
-                orderService.InsOrder(order);
-
-                return RedirectToAction("Query", "Order");
-            }
-            else
-            {
+                ViewBag.ErrorMessage = isProductDuplicate ? "商品重複!" : "驗證失敗!";
                 // 準備 [客戶名稱] 下拉選單
                 ViewBag.CustomerList = GetCustomerList();
 
@@ -89,6 +92,12 @@ namespace workshop1.Controllers
 
                 return View(order);
             }
+            ModelState.Clear();
+
+            OrderService orderService = new OrderService();
+            orderService.InsOrder(order);
+
+            return RedirectToAction("Query", "Order");
         }
 
         /// <summary>
@@ -117,22 +126,22 @@ namespace workshop1.Controllers
         [HttpPost]
         public ActionResult UpdateOrder(Order order)
         {
-            if (ModelState.IsValid)
-            {
-                ModelState.Clear();
-
-                OrderService orderService = new OrderService();
-                orderService.UpdOrder(order);
-
-                return RedirectToAction("Query", "Order");
-            }
-            else
+            // 產品選擇是否重複  true:有重複
+            bool isProductDuplicate = order.Details.Select(x => x.ProductID).Distinct().Count() != order.Details.Count;
+            if (!ModelState.IsValid || isProductDuplicate)
             {
                 // 準備下拉選單
                 PrepareDDLSource();
-
+                ViewBag.ErrorMessage = isProductDuplicate ? "商品重複!" : "驗證失敗!";
                 return View(order);
+
             }
+            ModelState.Clear();
+
+            OrderService orderService = new OrderService();
+            orderService.UpdOrder(order);
+
+            return RedirectToAction("Query", "Order");
         }
 
         /// <summary>
@@ -140,16 +149,32 @@ namespace workshop1.Controllers
         /// </summary>
         /// <param name="orderID">訂單編號</param>
         /// <returns></returns>
-        public ActionResult DeleteOrder(int orderID)
+        public JsonResult DeleteOrder(int OrderID)
         {
             OrderService orderService = new OrderService();
-            orderService.DelOrder(orderID);
+            orderService.DelOrder(OrderID);
 
-            return RedirectToAction("Query", "Order");
+            return Json("", JsonRequestBehavior.AllowGet);
         }
 
+
+        [HttpGet]
+        public JsonResult GetProducts()
+        {
+            ProductService s = new ProductService();
+            return Json(s.GetAllProduct().Select(x => new { Value = x.ProductID, Text = x.ProductName }), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetProductPrice(int ProductID)
+        {
+            ProductService s = new ProductService();
+            return Json(s.GetPrice(ProductID), JsonRequestBehavior.AllowGet);
+        }
+
+
         /// <summary>
-        /// 準備 [客戶]、[員工]、[出貨公司] 下拉選單資料於 ViewBag
+        /// 準備 [客戶]、[員工]、[出貨公司] 商品 下拉選單資料於 ViewBag
         /// </summary>
         private void PrepareDDLSource()
         {
@@ -161,13 +186,16 @@ namespace workshop1.Controllers
 
             // 準備 [出貨公司名稱] 下拉選單資料
             ViewBag.ShipperList = GetShipperList();
+
+            // 商品下拉選單
+            ViewBag.ProductList = GetProductList();
         }
 
         /// <summary>
         /// 取得[客戶]下拉選單
         /// </summary>
         /// <returns></returns>
-        private IEnumerable<SelectListItem> GetCustomerList()
+        private SelectList GetCustomerList()
         {
             CustomerService customerService = new CustomerService();
             SelectList customerList = new SelectList(customerService.GetCustomers(), "CustomerID", "CompanyName");
@@ -180,11 +208,12 @@ namespace workshop1.Controllers
         /// <returns></returns>
         private IEnumerable<SelectListItem> GetEmployeeList()
         {
-            EmployeeService employeeService = new EmployeeService();
+               EmployeeService employeeService = new EmployeeService();
             IList<Employee> employees = employeeService.GetEmployees();
+            //new SelectList(employees, "EmployeeID", "FirstName");
             IList<SelectListItem> employeeList = employees.Select(m => new SelectListItem
             {
-                Text = m.FirstName + m.LastName,
+                Text = m.FirstName + " " + m.LastName,
                 Value = m.EmployeeID.ToString()
             }).ToList();
 
@@ -199,6 +228,17 @@ namespace workshop1.Controllers
         {
             ShipperService shipperService = new ShipperService();
             SelectList shipperList = new SelectList(shipperService.GetShippers(), "ShipperID", "CompanyName");
+            return shipperList;
+        }
+
+        /// <summary>
+        /// 取得[商品]下拉選單
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<SelectListItem> GetProductList()
+        {
+            ProductService s = new ProductService();
+            SelectList shipperList = new SelectList(s.GetAllProduct(), "ProductID", "ProductName");
             return shipperList;
         }
     }

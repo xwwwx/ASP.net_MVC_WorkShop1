@@ -34,14 +34,31 @@
                 <td class="input-number">@order.OrderID</td>
                 <td>@customers.Single(m => m.CustomerID == order.CustomerID).CompanyName</td>
                 <td class="center">@order.OrderDate.ToString("yyyy/MM/dd")</td>
-                <td class="center">@(order.ShipedDate.HasValue ? order.ShipedDate.Value.ToString("yyyy/MM/dd") : "")</td>
+                <td class="center">@(order.ShippedDate.HasValue ? order.ShippedDate.Value.ToString("yyyy/MM/dd") : "")</td>
                 <td class="input-number">@(order.Freight.HasValue ? order.Freight.Value.ToString("#,##0") : "")</td>
                 <td class="center">@Html.ActionLink("修改", "UpdateOrder", new { controller = "Order", orderID = order.OrderID })</td>
-                <td class="center">@Html.ActionLink("刪除", "DeleteOrder", new { controller = "Order", orderID = order.OrderID })</td>
+                <td class="center"><button type="button" onclick="DeleteOrder(@(order.OrderID))">刪除</button></td>
             </tr>
         }
     </tbody>
 </table>
 
 <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("Query", "Order")';">回查詢頁</button>
+
+<script type="text/javascript">
+    function DeleteOrder(orderId) {
+        $.ajax({
+            type: "GET",
+            url: "/Order/DeleteOrder?OrderID=" + orderId,
+            dataType: "json",
+            success: function (r) {
+                alert('刪除成功');
+                location.href='@Url.Action("Query", "Order")'
+            },
+            error: function (r) {
+                alert('刪除失敗!');
+            },
+        })
+    }
+</script>
 
