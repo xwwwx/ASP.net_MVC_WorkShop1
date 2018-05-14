@@ -6,6 +6,7 @@ using System.Linq;
 using System.Transactions;
 using System.Web;
 using workshop1.Models;
+using System.Text;
 
 namespace workshop1.Daos
 {
@@ -341,6 +342,124 @@ namespace workshop1.Daos
             {
                 conn.Close();
             }
+        }
+
+        public List<Order> GetOrdersByArg(OrderQueryArg arg)
+        {
+            using (SqlConnection conn = GetSqlConnection())
+            {
+                List<Order> result = new List<Order>();
+                Queue<string> ruleQueue = new Queue<string>();
+                Dictionary<object, object> ruleDict = new Dictionary<object, object>();
+                if (arg.OrderID.HasValue)
+                {
+                    ruleQueue.Enqueue("OrderID");
+                    ruleDict.Add("OrderID", arg.OrderID);
+                }
+                if (!string.IsNullOrWhiteSpace(arg.CompanyName))
+                {
+                    ruleQueue.Enqueue("CompanyName");
+                    ruleDict.Add("CompanyName", arg.CompanyName);
+                }
+                if (arg.EmployeeID.HasValue)
+                {
+                    ruleQueue.Enqueue("EmployeeID");
+                    ruleDict.Add("EmployeeID", arg.EmployeeID);
+                }
+                if (arg.ShipperID.HasValue)
+                {
+                    ruleQueue.Enqueue("ShipperID");
+                    ruleDict.Add("ShipperID", arg.ShipperID);
+                }
+                if (arg.OrderDate.HasValue)
+                {
+                    ruleQueue.Enqueue("OrderDate");
+                    ruleDict.Add("OrderDate", arg.OrderDate);
+                }
+                if (arg.RequiredDate.HasValue)
+                {
+                    ruleQueue.Enqueue("RequiredDate");
+                    ruleDict.Add("RequiredDate", arg.RequiredDate);
+                }
+                if (arg.ShipedDate.HasValue)
+                {
+                    ruleQueue.Enqueue("ShipedDate");
+                    ruleDict.Add("ShipedDate", arg.ShipedDate);
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+                string[] rule = new string[ruleQueue.Count];
+
+                for (int i = 0; i < rule.Length; i++)
+                {
+                    rule[i] = ruleQueue.Dequeue();
+                }
+                string sql;
+                if (rule.Length == 0)
+                {
+                    sql = "select * from Sales.Orders";
+                }
+                else
+                {
+                    sql = "select * from Sales.Orders Where";
+                    stringBuilder.Append(sql);
+                    for (int i = 0; i < rule.Length; i++)
+                    {
+                        stringBuilder.Append(" " + rule[i] + " = @" + rule[i]);
+
+                        if (i != rule.Length - 1)
+                        {
+                            stringBuilder.Append(" AND");
+                        }
+
+                    }
+                    sql = stringBuilder.ToString();
+                }
+
+
+                SqlCommand cmd = new SqlCommand(sql, conn);
+
+                if(rule.Length != 0)
+                {
+                    for(int i = 0; i < rule.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@" + rule[i], ruleDict[rule[i]]);
+                    }
+                }
+
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+
+                DataSet ds = new DataSet();
+                adapter.Fill(ds);
+
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    result.Add(new Order
+                    {
+                        OrderID = int.Parse(row["OrderID"].ToString()),
+                        CustomerID = int.Parse(row["CustomerID"].ToString()),
+                        EmployeeID = int.Parse(row["EmployeeID"].ToString()),
+
+                        OrderDate = DateTime.Parse(row["OrderDate"].ToString()),
+                        RequiredDate = DateTime.Parse(row["RequiredDate"].ToString()),
+                        ShippedDate = (!string.IsNullOrWhiteSpace(row["ShippedDate"].ToString())) ? new DateTime?(DateTime.Parse(row["ShippedDate"].ToString())) : null,
+                        ShipperID = (!string.IsNullOrWhiteSpace(row["ShipperID"].ToString())) ? new int?(int.Parse(row["ShipperID"].ToString())) : null,
+                        Freight = (!string.IsNullOrWhiteSpace(row["Freight"].ToString())) ? new decimal?(decimal.Parse(row["Freight"].ToString())) : null,
+                        ShipCountry = row["ShipCountry"].ToString(),
+                        ShipCity = row["ShipCity"].ToString(),
+                        ShipRegion = row["ShipRegion"].ToString(),
+                        ShipPostalCode = row["ShipPostalCode"].ToString(),
+                        ShipAddress = row["ShipAddress"].ToString()
+                    });
+                }
+
+
+
+
+                return result;
+            }
+
+            
         }
     }
 }

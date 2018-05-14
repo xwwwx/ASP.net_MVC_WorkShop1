@@ -29,53 +29,7 @@ namespace workshop1.Models.Services
 
             OrdersDao orderDao = new OrdersDao();
             // 取得所有訂單後進行篩選  (注意: 此處應將查詢條件串入SQL中為較好之寫法)
-            IEnumerable<Order> currentOrders = orderDao.GetAllOrders();
-
-            // 訂單編號
-            if (arg.OrderID.HasValue)
-            {
-                currentOrders = currentOrders.Where(m => m.OrderID == arg.OrderID.Value);
-            }
-
-            // 客戶名稱 (like 查詢)
-            if (!string.IsNullOrWhiteSpace(arg.CompanyName))
-            {
-                currentOrders =
-                    currentOrders.Where(
-                        m => customerService.GetCompanyName(m.CustomerID).Contains(arg.CompanyName)
-                    );
-            }
-
-            // 員工編號
-            if (arg.EmployeeID.HasValue)
-            {
-                currentOrders = currentOrders.Where(m => m.EmployeeID == arg.EmployeeID.Value);
-            }
-
-            // 出貨公司
-            if (arg.ShipperID.HasValue)
-            {
-                currentOrders = currentOrders.Where(m => m.ShipperID == arg.ShipperID.Value);
-            }
-
-            // 訂購日期
-            if (arg.OrderDate.HasValue)
-            {
-                currentOrders = currentOrders.Where(m => m.OrderDate == arg.OrderDate.Value);
-            }
-
-            // 需要日期
-            if (arg.RequiredDate.HasValue)
-            {
-                currentOrders = currentOrders.Where(m => m.RequiredDate == arg.RequiredDate.Value);
-            }
-
-            // 出貨日期
-            if (arg.ShipedDate.HasValue)
-            {
-                currentOrders = currentOrders.Where(m => m.ShippedDate == arg.ShipedDate.Value);
-            }
-
+            IEnumerable<Order> currentOrders = orderDao.GetOrdersByArg(arg);
             return currentOrders.OrderBy(m => m.OrderID).ToList();
         }
 
