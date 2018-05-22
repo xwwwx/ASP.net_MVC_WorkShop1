@@ -35,7 +35,6 @@ namespace workshop1.Daos
                         OrderID = int.Parse(row["OrderID"].ToString()),
                         CustomerID = int.Parse(row["CustomerID"].ToString()),
                         EmployeeID = int.Parse(row["EmployeeID"].ToString()),
-
                         OrderDate = DateTime.Parse(row["OrderDate"].ToString()),
                         RequiredDate = DateTime.Parse(row["RequiredDate"].ToString()),
                         ShippedDate = (!string.IsNullOrWhiteSpace(row["ShippedDate"].ToString())) ? new DateTime?(DateTime.Parse(row["ShippedDate"].ToString())) : null,
@@ -439,7 +438,6 @@ namespace workshop1.Daos
                         OrderID = int.Parse(row["OrderID"].ToString()),
                         CustomerID = int.Parse(row["CustomerID"].ToString()),
                         EmployeeID = int.Parse(row["EmployeeID"].ToString()),
-
                         OrderDate = DateTime.Parse(row["OrderDate"].ToString()),
                         RequiredDate = DateTime.Parse(row["RequiredDate"].ToString()),
                         ShippedDate = (!string.IsNullOrWhiteSpace(row["ShippedDate"].ToString())) ? new DateTime?(DateTime.Parse(row["ShippedDate"].ToString())) : null,
@@ -452,11 +450,7 @@ namespace workshop1.Daos
                         ShipAddress = row["ShipAddress"].ToString()
                     });
                 }
-
-
-
-
-                return result;
+                 return result;
             }
 
             

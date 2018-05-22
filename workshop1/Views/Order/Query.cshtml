@@ -16,11 +16,11 @@
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.EmployeeID)</td>
-            <td colspan="3">@Html.DropDownListFor(m => m.EmployeeID, (IEnumerable<SelectListItem>)ViewBag.EmployeeList, "請選擇", new { @class = "form-control", style = "width:200px" })</td>
+            <td colspan="3">@Html.TextBoxFor(m => m.EmployeeID, new { style = "width:200px" })</td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.ShipperID)</td>
-            <td colspan="3">@Html.DropDownListFor(m => m.ShipperID, (IEnumerable<SelectListItem>)ViewBag.ShipperList, "請選擇", new { @class = "form-control", style = "width:200px" })</td>
+            <td colspan="3">@Html.TextBoxFor(m => m.ShipperID, new { style = "width:200px" })</td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.OrderDate)</td>
@@ -47,6 +47,32 @@
             $("#OrderDate").kendoDatePicker();
             $("#ShippedDate").kendoDatePicker();
             $("#RequiredDate").kendoDatePicker();
+            let EmployeeList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.EmployeeList));
+            let EmployeeComboBoxData = [];
+            EmployeeList.forEach(function (item) {
+                EmployeeComboBoxData.push({
+                    "text": item["FirstName"] + item["LastName"],
+                    "value":item["EmployeeID"]
+                });
+            });
+            let ShipperList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ShipperList));
+
+
+            $("#EmployeeID").kendoComboBox({
+                dataTextField: "text",
+                dataValueField: "value",
+                dataSource: EmployeeComboBoxData,
+                filter: "contains",
+                suggest: true
+            });
+
+            $("#ShipperID").kendoComboBox({
+                dataTextField: "CompanyName",
+                dataValueField: "ShipperID",
+                dataSource: ShipperList,
+                filter: "contains",
+                suggest: true
+            });
         });
     </script>
 }

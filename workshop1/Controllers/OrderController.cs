@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Helpers;
 using workshop1.Models;
 using workshop1.Models.Services;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace workshop1.Controllers
 {
@@ -19,11 +21,17 @@ namespace workshop1.Controllers
         public ActionResult Query()
         {
             // 準備 [員工] 下拉選單資料
-            ViewBag.EmployeeList = GetEmployeeList();
+            ViewBag.EmployeeList = new EmployeeService().GetEmployees();
 
             // 準備 [出貨公司] 下拉選單資料
-            ViewBag.ShipperList = GetShipperList();
-            
+            IList<Shipper> shippers = new ShipperService().GetShippers();
+
+            foreach (Shipper item in shippers)
+            {
+                item.Phone = "";
+            }
+
+            ViewBag.ShipperList = shippers;
 
             return View();
         }
