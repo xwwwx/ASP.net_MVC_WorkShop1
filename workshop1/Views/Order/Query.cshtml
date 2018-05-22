@@ -24,13 +24,13 @@
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.OrderDate)</td>
-            <td>@Html.TextBoxFor(m => m.OrderDate, new { type = "date" , @class="form-control", style = "width:200px" })</td>
-            <td>@Html.LabelFor(m => m.ShipedDate)</td>
-            <td>@Html.TextBoxFor(m => m.ShipedDate, new { type = "date", @class = "form-control", style = "width:200px" })</td>
+            <td>@Html.TextBoxFor(m => m.OrderDate, new {  style = "width:200px" })</td>
+            <td>@Html.LabelFor(m => m.ShippedDate)</td>
+            <td>@Html.TextBoxFor(m => m.ShippedDate, new {  style = "width:200px" })</td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.RequiredDate)</td>
-            <td colspan="3">@Html.TextBoxFor(m => m.RequiredDate, new { type = "date", @class = "form-control", style = "width:200px" })</td>
+            <td colspan="3">@Html.TextBoxFor(m => m.RequiredDate, new {  style = "width:200px" })</td>
         </tr>
         <tr>
             <td></td>
@@ -41,4 +41,12 @@
             </td>
         </tr>
     </table>
+
+    <script>
+        $().ready(function () {
+            $("#OrderDate").kendoDatePicker();
+            $("#ShippedDate").kendoDatePicker();
+            $("#RequiredDate").kendoDatePicker();
+        });
+    </script>
 }

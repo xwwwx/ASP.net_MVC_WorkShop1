@@ -21,6 +21,6 @@ namespace workshop1.Models
         [Display(Name = "需要日期")]
         public DateTime? RequiredDate { get; set; }
         [Display(Name = "出貨日期")]
-        public DateTime? ShipedDate { get; set; }
+        public DateTime? ShippedDate { get; set; }
     }
 }

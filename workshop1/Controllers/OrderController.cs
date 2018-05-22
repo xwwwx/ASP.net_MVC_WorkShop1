@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using workshop1.Models;
 using workshop1.Models.Services;
+using System.Text;
 
 namespace workshop1.Controllers
 {
@@ -22,6 +23,7 @@ namespace workshop1.Controllers
 
             // 準備 [出貨公司] 下拉選單資料
             ViewBag.ShipperList = GetShipperList();
+            
 
             return View();
         }
@@ -241,5 +243,7 @@ namespace workshop1.Controllers
             SelectList shipperList = new SelectList(s.GetAllProduct(), "ProductID", "ProductName");
             return shipperList;
         }
+
+        
     }
 }

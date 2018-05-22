@@ -381,10 +381,10 @@ namespace workshop1.Daos
                     ruleQueue.Enqueue("RequiredDate");
                     ruleDict.Add("RequiredDate", arg.RequiredDate);
                 }
-                if (arg.ShipedDate.HasValue)
+                if (arg.ShippedDate.HasValue)
                 {
-                    ruleQueue.Enqueue("ShipedDate");
-                    ruleDict.Add("ShipedDate", arg.ShipedDate);
+                    ruleQueue.Enqueue("ShippedDate");
+                    ruleDict.Add("ShippedDate", arg.ShippedDate);
                 }
 
                 StringBuilder stringBuilder = new StringBuilder();
