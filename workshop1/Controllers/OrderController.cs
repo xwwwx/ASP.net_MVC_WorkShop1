@@ -57,6 +57,26 @@ namespace workshop1.Controllers
         }
 
         /// <summary>
+        /// 訂單查詢功能
+        /// </summary>
+        /// <param name="arg">查詢條件</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult OrderListJson(OrderQueryArg arg)
+        {
+            OrderService orderService = new OrderService();
+            CustomerService customerService = new CustomerService();
+
+            // 過濾後訂單資料
+            IList<Order> orders = orderService.GetOrders(arg);
+
+            // 所有客戶資料
+            ViewBag.Customers = customerService.GetCustomers();
+
+            return Json(orders);
+        }
+
+        /// <summary>
         /// 建立訂單頁面
         /// </summary>
         /// <returns></returns>

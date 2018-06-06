@@ -8,11 +8,11 @@
     <table style="margin-top:10px;">
         <tr>
             <td>@Html.LabelFor(m => m.OrderID)</td>
-            <td colspan="3">@Html.TextBoxFor(m => m.OrderID, new { type= "number", @class="form-control input-number", style="width:200px"})</td>
+            <td colspan="3">@Html.TextBoxFor(m => m.OrderID, new { type= "number", style="width:200px"})</td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.CompanyName)</td>
-            <td colspan="3">@Html.TextBoxFor(m => m.CompanyName, new { @class="form-control", style = "width:200px" })</td>
+            <td colspan="3">@Html.TextBoxFor(m => m.CompanyName, new { @class="k-textbox", style = "width:200px" })</td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.EmployeeID)</td>
@@ -35,12 +35,15 @@
         <tr>
             <td></td>
             <td colspan="3">
+                <button id="submit" type="button" class="btn btn-primary" onclick="SubmitQuery()">查詢</button>
                 <input type="submit" value="查詢" class="btn btn-primary" />
                 <input type="reset" value="清除" class="btn btn-warning" />
                 <button type="button" class="btn btn-info" onclick="location.href='@Url.Action("CreateOrder", "Order")';">新增訂單</button>
             </td>
         </tr>
     </table>
+
+    <div id="QueryResult"></div>
 
     <script>
         $().ready(function () {
@@ -73,6 +76,107 @@
                 filter: "contains",
                 suggest: true
             });
+
+            $("#OrderID").kendoNumericTextBox({
+                min :0
+            });
         });
+
+        function SubmitQuery(){
+            $.ajax({
+                type: "POST",
+                url: "/Order/OrderListJson",
+                data: {
+                    "OrderID": $("#OrderID").val(),
+                    "CompanyName": $("#CompanyName").val(),
+                    "EmployeeID": $("#EmployeeID").val(),
+                    "ShipperID": $("#ShipperID").val(),
+                    "OrderDate": $("#OrderDate").val(),
+                    "ShippedDate": $("#ShippedDate").val(),
+                    "RequiredDate": $("#RequiredDate").val()
+                },
+                success: function (data) {
+                    var DataSource = new kendo.data.DataSource({
+                        data: data,
+                        schema: {
+                            model: {
+                                fields: {
+                                    OrderID: { type: "number" },
+                                    CustomerID: { type: "number" },
+                                    EmployeeID: { type: "number" },
+                                    OrderDate: { type: "date" },
+                                    RequiredDate: { type: "date" },
+                                    ShippedDate: { type: "date" },
+                                    Freight: { type: "number" },
+                                    ShipCountry: { type: "string" },
+                                    ShipCity: { type: "string" },
+                                    ShipRegion: { type: "string" },
+                                    ShipPostalCode: { type: "string" },
+                                    ShipAddress: { type: "string" }
+                                }
+                            }
+                        }
+                    });
+                    $("#QueryResult").kendoGrid({
+                        dataSource: DataSource,
+                        columns: [
+                            {
+                                field: "OrderID",
+                                title: "OrderID"
+                            },
+                            {
+                                field: "CustomerID",
+                                title: "CustomerID"
+                            },
+                            {
+                                field: "EmployeeID",
+                                title: "EmployeeID"
+                            },
+                            {
+                                field: "OrderDate",
+                                title: "OrderDate",
+                                format: "{0:yyyy/MM/dd}"
+                            },
+                            {
+                                field: "RequiredDate",
+                                title: "RequiredDate",
+                                format: "{0:yyyy/MM/dd}"
+                            },
+                            {
+                                field: "ShippedDate",
+                                title: "ShippedDate",
+                                format: "{0:yyyy/MM/dd}"
+                            },
+                            {
+                                field: "Freight",
+                                title: "Freight"
+                            },
+                            {
+                                field: "ShipCountry",
+                                title: "Ship Country"
+                            },
+
+                            {
+                                field: "ShipCity",
+                                title: "ShipCity"
+                            },
+                            {
+                                field: "ShipRegion",
+                                title: "ShipRegion"
+                            },
+                            {
+                                field: "ShipPostalCode",
+                                title: "ShipPostalCode"
+                            },
+                            {
+                                field: "ShipAddress",
+                                title: "ShipAddress"
+                            }
+                            
+                        ]
+                    });
+                }
+            });
+        }
     </script>
 }

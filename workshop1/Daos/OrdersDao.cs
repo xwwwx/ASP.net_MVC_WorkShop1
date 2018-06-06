@@ -357,6 +357,7 @@ namespace workshop1.Daos
                 }
                 if (!string.IsNullOrWhiteSpace(arg.CompanyName))
                 {
+                    
                     ruleQueue.Enqueue("CompanyName");
                     ruleDict.Add("CompanyName", arg.CompanyName);
                 }
