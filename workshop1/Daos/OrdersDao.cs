@@ -359,7 +359,7 @@ namespace workshop1.Daos
                 {
                     
                     ruleQueue.Enqueue("CompanyName");
-                    ruleDict.Add("CompanyName", arg.CompanyName);
+                    ruleDict.Add("CompanyName", "%"+arg.CompanyName+"%");
                 }
                 if (arg.EmployeeID.HasValue)
                 {
@@ -401,11 +401,16 @@ namespace workshop1.Daos
                 }
                 else
                 {
-                    sql = "select * from Sales.Orders Where";
+                    sql = "select * from Sales.Orders join Sales.Customers on Sales.Orders.CustomerID = Sales.Customers.CustomerID Where";
                     stringBuilder.Append(sql);
                     for (int i = 0; i < rule.Length; i++)
                     {
-                        stringBuilder.Append(" " + rule[i] + " = @" + rule[i]);
+                        if(rule[i] != "CompanyName")
+                            stringBuilder.Append(" " + rule[i] + " = @" + rule[i]);
+                        else
+                        {
+                            stringBuilder.Append(" " + rule[i] + " LIKE @" + rule[i]);
+                        }
 
                         if (i != rule.Length - 1)
                         {
