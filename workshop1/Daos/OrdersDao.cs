@@ -397,7 +397,7 @@ namespace workshop1.Daos
                 string sql;
                 if (rule.Length == 0)
                 {
-                    sql = "select * from Sales.Orders";
+                    sql = "select * from Sales.Orders join Sales.Customers on Sales.Orders.CustomerID = Sales.Customers.CustomerID";
                 }
                 else
                 {
@@ -443,6 +443,7 @@ namespace workshop1.Daos
                     {
                         OrderID = int.Parse(row["OrderID"].ToString()),
                         CustomerID = int.Parse(row["CustomerID"].ToString()),
+                        CompanyName = row["CompanyName"].ToString(),
                         EmployeeID = int.Parse(row["EmployeeID"].ToString()),
                         OrderDate = DateTime.Parse(row["OrderDate"].ToString()),
                         RequiredDate = DateTime.Parse(row["RequiredDate"].ToString()),

@@ -24,19 +24,18 @@
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.OrderDate)</td>
-            <td>@Html.TextBoxFor(m => m.OrderDate, new {  style = "width:200px" })</td>
+            <td>@Html.TextBoxFor(m => m.OrderDate, new {  style = "width:200px", @class = "DateClass" })</td>
             <td>@Html.LabelFor(m => m.ShippedDate)</td>
-            <td>@Html.TextBoxFor(m => m.ShippedDate, new {  style = "width:200px" })</td>
+            <td>@Html.TextBoxFor(m => m.ShippedDate, new {  style = "width:200px", @class = "DateClass" })</td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.RequiredDate)</td>
-            <td colspan="3">@Html.TextBoxFor(m => m.RequiredDate, new {  style = "width:200px" })</td>
+            <td colspan="3">@Html.TextBoxFor(m => m.RequiredDate, new {  style = "width:200px", @class = "DateClass" })</td>
         </tr>
         <tr>
             <td></td>
             <td colspan="3">
                 <button id="submit" type="button" class="btn btn-primary" onclick="SubmitQuery()">查詢</button>
-                <input type="submit" value="查詢" class="btn btn-primary" />
                 <input type="reset" value="清除" class="btn btn-warning" />
                 <button type="button" class="btn btn-info" onclick="location.href='@Url.Action("CreateOrder", "Order")';">新增訂單</button>
             </td>
@@ -46,25 +45,19 @@
     <div id="QueryResult"></div>
 
     <script>
+        
         $().ready(function () {
-            $("#OrderDate").kendoDatePicker();
-            $("#ShippedDate").kendoDatePicker();
-            $("#RequiredDate").kendoDatePicker();
+            $(".DateClass").kendoDatePicker({ format: "yyyy/MM/dd" });
             let EmployeeList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.EmployeeList));
-            let EmployeeComboBoxData = [];
-            EmployeeList.forEach(function (item) {
-                EmployeeComboBoxData.push({
-                    "text": item["FirstName"] + item["LastName"],
-                    "value":item["EmployeeID"]
-                });
-            });
             let ShipperList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ShipperList));
-
+            
 
             $("#EmployeeID").kendoComboBox({
-                dataTextField: "text",
-                dataValueField: "value",
-                dataSource: EmployeeComboBoxData,
+                dataTextField: "FirstName",
+                dataValueField: "EmployeeID",
+                dataSource: EmployeeList,
+                template: "#: FirstName # #: LastName #",
+                valueTemplate: "#: FirstName # #: LastName #",
                 filter: "contains",
                 suggest: true
             });
@@ -80,12 +73,75 @@
             $("#OrderID").kendoNumericTextBox({
                 min :0
             });
+
+            $("#QueryResult").kendoGrid({
+                columns: [
+                    {
+                        field: "OrderID",
+                        title: "OrderID"
+                    },
+                    {
+                        field: "CompanyName",
+                        title: "CompanyName"
+                    },
+                    {
+                        field: "OrderDate",
+                        title: "OrderDate",
+                        format: "{0:yyyy/MM/dd}"
+                    },
+                    {
+                        field: "ShippedDate",
+                        title: "ShippedDate",
+                        format: "{0:yyyy/MM/dd}"
+                    },
+                    {
+                        field: "Freight",
+                        title: "Freight",
+                        format: "{0:#}"
+                    },
+                    {
+                        field: "修改",
+                        command: [{
+                            name: "修改",
+                            click: function (e) {
+                                // prevent page scroll position change
+                                e.preventDefault();
+                                // e.target is the DOM element representing the button
+                                var tr = $(e.target).closest("tr"); // get the current table row (tr)
+                                // get the data bound to the current table row
+                                var data = this.dataItem(tr);
+                                location.href = "/Order/UpdateOrder?orderID=" + data.OrderID;
+                            }
+                        }]
+                    },
+                    {
+                        field: "刪除",
+                        command: [{
+                            name: "刪除",
+                            click: function (e) {
+                                // prevent page scroll position change
+                                e.preventDefault();
+                                // e.target is the DOM element representing the button
+                                var tr = $(e.target).closest("tr"); // get the current table row (tr)
+                                // get the data bound to the current table row
+                                var data = this.dataItem(tr);
+                                DeleteOrder(data.OrderID);
+                            }
+                        }]
+                    }
+
+                ],
+                pageable: {
+                    pageSize: 10
+                }
+            });
+            
         });
 
         function SubmitQuery(){
             $.ajax({
                 type: "POST",
-                url: "/Order/OrderListJson",
+                url: "/Order/GetOrderList",
                 data: {
                     "OrderID": $("#OrderID").val(),
                     "CompanyName": $("#CompanyName").val(),
@@ -97,6 +153,7 @@
                 },
                 success: function (data) {
                     var DataSource = new kendo.data.DataSource({
+                        batch: true,
                         data: data,
                         schema: {
                             model: {
@@ -112,71 +169,31 @@
                                     ShipCity: { type: "string" },
                                     ShipRegion: { type: "string" },
                                     ShipPostalCode: { type: "string" },
-                                    ShipAddress: { type: "string" }
+                                    ShipAddress: { type: "string" },
+                                    CompanyName: { type: "string" }
                                 }
                             }
-                        }
+                        },
+                        pageSize: 10
                     });
-                    $("#QueryResult").kendoGrid({
-                        dataSource: DataSource,
-                        columns: [
-                            {
-                                field: "OrderID",
-                                title: "OrderID"
-                            },
-                            {
-                                field: "CustomerID",
-                                title: "CustomerID"
-                            },
-                            {
-                                field: "EmployeeID",
-                                title: "EmployeeID"
-                            },
-                            {
-                                field: "OrderDate",
-                                title: "OrderDate",
-                                format: "{0:yyyy/MM/dd}"
-                            },
-                            {
-                                field: "RequiredDate",
-                                title: "RequiredDate",
-                                format: "{0:yyyy/MM/dd}"
-                            },
-                            {
-                                field: "ShippedDate",
-                                title: "ShippedDate",
-                                format: "{0:yyyy/MM/dd}"
-                            },
-                            {
-                                field: "Freight",
-                                title: "Freight"
-                            },
-                            {
-                                field: "ShipCountry",
-                                title: "Ship Country"
-                            },
-
-                            {
-                                field: "ShipCity",
-                                title: "ShipCity"
-                            },
-                            {
-                                field: "ShipRegion",
-                                title: "ShipRegion"
-                            },
-                            {
-                                field: "ShipPostalCode",
-                                title: "ShipPostalCode"
-                            },
-                            {
-                                field: "ShipAddress",
-                                title: "ShipAddress"
-                            }
-                            
-                        ]
-                    });
-                }
+                   
+                    $("#QueryResult").data("kendoGrid").setDataSource(DataSource);
+                 }
             });
         }
+        function DeleteOrder(orderId) {
+        $.ajax({
+            type: "GET",
+            url: "/Order/DeleteOrder?OrderID=" + orderId,
+            dataType: "json",
+            success: function (r) {
+                alert('刪除成功');
+                location.href='@Url.Action("Query", "Order")'
+            },
+            error: function (r) {
+                alert('刪除失敗!');
+            },
+        })
+    }
     </script>
 }

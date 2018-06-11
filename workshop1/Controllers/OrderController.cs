@@ -26,6 +26,8 @@ namespace workshop1.Controllers
             // 準備 [出貨公司] 下拉選單資料
             IList<Shipper> shippers = new ShipperService().GetShippers();
 
+            
+
             foreach (Shipper item in shippers)
             {
                 item.Phone = "";
@@ -62,7 +64,7 @@ namespace workshop1.Controllers
         /// <param name="arg">查詢條件</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult OrderListJson(OrderQueryArg arg)
+        public JsonResult GetOrderList(OrderQueryArg arg)
         {
             OrderService orderService = new OrderService();
             CustomerService customerService = new CustomerService();

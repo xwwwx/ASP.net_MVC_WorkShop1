@@ -22,9 +22,12 @@ namespace workshop1.Models
         [Required]
         public int CustomerID { get; set; }
 
+
         [Display(Name = "負責員工名稱")]
         [Required]
         public int EmployeeID { get; set; }
+
+        public string CompanyName { get; set; }
 
         [Display(Name ="訂單日期")]
         [DataType(DataType.Date)]
