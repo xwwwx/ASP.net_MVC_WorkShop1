@@ -348,54 +348,50 @@ namespace workshop1.Daos
             using (SqlConnection conn = GetSqlConnection())
             {
                 List<Order> result = new List<Order>();
-                Queue<string> ruleQueue = new Queue<string>();
                 Dictionary<object, object> ruleDict = new Dictionary<object, object>();
                 if (arg.OrderID.HasValue)
                 {
-                    ruleQueue.Enqueue("OrderID");
+                    
                     ruleDict.Add("OrderID", arg.OrderID);
                 }
                 if (!string.IsNullOrWhiteSpace(arg.CompanyName))
                 {
                     
-                    ruleQueue.Enqueue("CompanyName");
+                    
                     ruleDict.Add("CompanyName", "%"+arg.CompanyName+"%");
                 }
                 if (arg.EmployeeID.HasValue)
                 {
-                    ruleQueue.Enqueue("EmployeeID");
+                    
                     ruleDict.Add("EmployeeID", arg.EmployeeID);
                 }
                 if (arg.ShipperID.HasValue)
                 {
-                    ruleQueue.Enqueue("ShipperID");
+                    
                     ruleDict.Add("ShipperID", arg.ShipperID);
                 }
                 if (arg.OrderDate.HasValue)
                 {
-                    ruleQueue.Enqueue("OrderDate");
+                    
                     ruleDict.Add("OrderDate", arg.OrderDate);
                 }
                 if (arg.RequiredDate.HasValue)
                 {
-                    ruleQueue.Enqueue("RequiredDate");
+                   
                     ruleDict.Add("RequiredDate", arg.RequiredDate);
                 }
                 if (arg.ShippedDate.HasValue)
                 {
-                    ruleQueue.Enqueue("ShippedDate");
+                   
                     ruleDict.Add("ShippedDate", arg.ShippedDate);
                 }
 
                 StringBuilder stringBuilder = new StringBuilder();
-                string[] rule = new string[ruleQueue.Count];
 
-                for (int i = 0; i < rule.Length; i++)
-                {
-                    rule[i] = ruleQueue.Dequeue();
-                }
+                
+                
                 string sql;
-                if (rule.Length == 0)
+                if (ruleDict.Count == 0)
                 {
                     sql = "select * from Sales.Orders join Sales.Customers on Sales.Orders.CustomerID = Sales.Customers.CustomerID";
                 }
@@ -403,33 +399,36 @@ namespace workshop1.Daos
                 {
                     sql = "select * from Sales.Orders join Sales.Customers on Sales.Orders.CustomerID = Sales.Customers.CustomerID Where";
                     stringBuilder.Append(sql);
-                    for (int i = 0; i < rule.Length; i++)
+                    int count = 0;
+                    foreach (KeyValuePair<object,object> kvp in ruleDict)
                     {
-                        if(rule[i] != "CompanyName")
-                            stringBuilder.Append(" " + rule[i] + " = @" + rule[i]);
+                        if (kvp.Key.ToString() != "CompanyName")
+                            stringBuilder.Append(" " + kvp.Key + " = @" + kvp.Key);
                         else
                         {
-                            stringBuilder.Append(" " + rule[i] + " LIKE @" + rule[i]);
+                            stringBuilder.Append(" " + kvp.Key + " LIKE @" + kvp.Key);
                         }
-
-                        if (i != rule.Length - 1)
+                        if (count != ruleDict.Count - 1)
                         {
                             stringBuilder.Append(" AND");
                         }
+                        count++;
 
                     }
+                    
                     sql = stringBuilder.ToString();
                 }
 
 
                 SqlCommand cmd = new SqlCommand(sql, conn);
 
-                if(rule.Length != 0)
+                if(ruleDict.Count != 0)
                 {
-                    for(int i = 0; i < rule.Length; i++)
+                    foreach (KeyValuePair<object, object> kvp in ruleDict)
                     {
-                        cmd.Parameters.AddWithValue("@" + rule[i], ruleDict[rule[i]]);
+                        cmd.Parameters.AddWithValue("@" + kvp.Key, kvp.Value);
                     }
+                    
                 }
 
                 SqlDataAdapter adapter = new SqlDataAdapter(cmd);
