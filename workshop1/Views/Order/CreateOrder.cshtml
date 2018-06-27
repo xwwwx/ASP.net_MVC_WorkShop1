@@ -8,77 +8,77 @@
         <tr>
             <td>@Html.LabelFor(m => m.CustomerID, new { @class = "required" })</td>
             <td colspan="3">
-                @Html.DropDownListFor(m => m.CustomerID, (SelectList)ViewBag.CustomerList, "請選擇", new { @class = "form-control", style = "width:200px" })
+                @Html.DropDownListFor(m => m.CustomerID, (SelectList)ViewBag.CustomerList, "請選擇", new { @class = "SelectClass", style = "width:200px" })
                 @Html.ValidationMessageFor(m => m.CustomerID)
             </td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.EmployeeID, new { @class = "required" })</td>
             <td colspan="3">
-                @Html.DropDownListFor(m => m.EmployeeID, (IEnumerable<SelectListItem>)ViewBag.EmployeeList, "請選擇", new { @class = "form-control", style = "width:200px" })
+                @Html.DropDownListFor(m => m.EmployeeID, (IEnumerable<SelectListItem>)ViewBag.EmployeeList, "請選擇", new { @class = "SelectClass", style = "width:200px" })
                 @Html.ValidationMessageFor(m => m.EmployeeID)
             </td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.OrderDate, new { @class = "required" })</td>
             <td>
-                @Html.TextBoxFor(m => m.OrderDate, new { type = "date", @class = "form-control", style = "width:150px" })
+                @Html.TextBoxFor(m => m.OrderDate, new { type = "date", @class = "DateClass", style = "width:150px" })
                 @Html.ValidationMessageFor(m => m.OrderDate)
             </td>
             <td>@Html.LabelFor(m => m.RequiredDate, new { @class = "required" })</td>
             <td>
-                @Html.TextBoxFor(m => m.RequiredDate, new { type = "date", @class = "form-control", style = "width:150px" })
+                @Html.TextBoxFor(m => m.RequiredDate, new { type = "date", @class = "DateClass", style = "width:150px" })
                 @Html.ValidationMessageFor(m => m.RequiredDate)
             </td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.ShippedDate)</td>
             <td colspan="3">
-                @Html.TextBoxFor(m => m.ShippedDate, new { type = "date", @class = "form-control", style = "width:150px" })
+                @Html.TextBoxFor(m => m.ShippedDate, new { type = "date", @class = "DateClass", style = "width:150px" })
             </td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.ShipperID)</td>
             <td colspan="3">
-                @Html.DropDownListFor(m => m.ShipperID, (IEnumerable<SelectListItem>)ViewBag.ShipperList, "請選擇", new { @class = "form-control", style = "width:200px" })
+                @Html.DropDownListFor(m => m.ShipperID, (IEnumerable<SelectListItem>)ViewBag.ShipperList, "請選擇", new { @class = "SelectClass", style = "width:200px" })
                 @Html.ValidationMessageFor(m => m.ShipperID)
             </td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.Freight)</td>
             <td colspan="3">
-                @Html.TextBoxFor(m => m.Freight, new { type = "number", @class = "input-number form-control", style = "width:150px" })
+                @Html.TextBoxFor(m => m.Freight, new { type = "number", style = "width:150px" })
                 @Html.ValidationMessageFor(m => m.Freight)
             </td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.ShipCountry)</td>
             <td>
-                @Html.TextBoxFor(m => m.ShipCountry, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.ShipCountry, new { @class = "k-textbox" })
                 @Html.ValidationMessageFor(m => m.ShipCountry)
             </td>
             <td>@Html.LabelFor(m => m.ShipCity)</td>
             <td>
-                @Html.TextBoxFor(m => m.ShipCity, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.ShipCity, new { @class = "k-textbox" })
                 @Html.ValidationMessageFor(m => m.ShipCity)
             </td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.ShipRegion)</td>
             <td>
-                @Html.TextBoxFor(m => m.ShipRegion, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.ShipRegion, new { @class = "k-textbox" })
                 @Html.ValidationMessageFor(m => m.ShipRegion)
             </td>
             <td>@Html.LabelFor(m => m.ShipPostalCode)</td>
             <td>
-                @Html.TextBoxFor(m => m.ShipPostalCode, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.ShipPostalCode, new { @class = "k-textbox" })
                 @Html.ValidationMessageFor(m => m.ShipPostalCode)
             </td>
         </tr>
         <tr>
             <td>@Html.LabelFor(m => m.ShipAddress)</td>
             <td colspan="3">
-                @Html.TextBoxFor(m => m.ShipAddress, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.ShipAddress, new { @class = "k-textbox" })
                 @Html.ValidationMessageFor(m => m.ShipAddress)
             </td>
         </tr>
@@ -104,6 +104,15 @@
     </table>
 }
 <script type="text/javascript">    
+
+    $().ready(function () {
+        $(".SelectClass").kendoComboBox();
+        $(".DateClass").kendoDatePicker({ format: "yyyy/MM/dd" });
+        $("#Freight").kendoNumericTextBox();
+
+    });
+
+
     @if(!string.IsNullOrWhiteSpace(ViewBag.ErrorMessage))
     {
     <text>
